@@ -1,10 +1,6 @@
 package com.meuamericanet.redetelecom.toolbox;
 
 
-import android.Manifest;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,28 +15,23 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Vibrator;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.TaskStackBuilder;
-import androidx.core.view.KeyEventDispatcher;
+import androidx.appcompat.app.AlertDialog;
 
-import com.meuamericanet.redetelecom.view.Splash;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.meuamericanet.redetelecom.R;
-
-import org.w3c.dom.Element;
+import com.meuamericanet.redetelecom.toolbox.Config.VariaveisGlobais;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -74,36 +65,20 @@ import static android.content.Context.VIBRATOR_SERVICE;
  */
 public final class Ferramentas {
 
-    /*
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    public void geraNotificacaoPushPadrao(Context ctx, String titulo, String msg, int idNotification) {
-        try {
-            Vibrator v = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
-            v.vibrate(700);
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-        ////////////////////// VIBRAR ///////////////////////////
-        Notification.Builder mBuilder = null;
-        mBuilder = new Notification.Builder(ctx)
-                .setSmallIcon(R.drawable.ic_notificacao_padrao)
-                .setContentTitle(titulo).setStyle(new Notification.BigTextStyle())
-                .setContentText(msg);
-        Intent resultIntent = new Intent(ctx, MainActivity.class);
-        android.app.TaskStackBuilder stackBuilder = android.app.TaskStackBuilder.create(ctx);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mNotificationManager.notify(idNotification, mBuilder.build());
-        }
-        //////////////////////////////////////////////////////////
+    /**
+     * Exibe progress dialog da operação em questão
+     *
+     * @author      Igor Maximo
+     * @date        20/09/2021
+     */
+    public static AlertDialog setShowProgressDialog(Context context) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+        builder.setView(R.layout.progress_dialog_custom);
+        final AlertDialog dialog = builder.show();
+        return dialog;
     }
-    */
+
+
 
     public static String[] concatenaVetores(String[] vetor1, String[] vetor2) {
         final int length = vetor1.length + vetor2.length;

@@ -1,16 +1,12 @@
 package com.meuamericanet.redetelecom.repository;
 
-import com.google.gson.JsonElement;
-import com.meuamericanet.redetelecom.model.Usuario;
 import com.meuamericanet.redetelecom.model.UsuarioLogin;
-import com.meuamericanet.redetelecom.toolbox.VariaveisGlobais;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 

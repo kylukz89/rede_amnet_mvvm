@@ -1,4 +1,4 @@
-package com.meuamericanet.redetelecom.toolbox;
+package com.meuamericanet.redetelecom.toolbox.Config;
 
 import java.util.Arrays;
 

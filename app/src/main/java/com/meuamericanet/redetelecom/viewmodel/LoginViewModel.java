@@ -1,24 +1,28 @@
 package com.meuamericanet.redetelecom.viewmodel;
 
-import android.util.Log;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.widget.ProgressBar;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.meuamericanet.redetelecom.BR;
 import com.meuamericanet.redetelecom.model.Usuario;
 import com.meuamericanet.redetelecom.model.UsuarioLogin;
 import com.meuamericanet.redetelecom.repository.UsuarioAPI;
-import com.meuamericanet.redetelecom.repository.UsuarioJSON;
+import com.meuamericanet.redetelecom.toolbox.Config.VariaveisGlobais;
 import com.meuamericanet.redetelecom.toolbox.Ferramentas;
-import com.meuamericanet.redetelecom.toolbox.VariaveisGlobais;
+import com.meuamericanet.redetelecom.toolbox.Valid.ValidaCNPJ;
+import com.meuamericanet.redetelecom.toolbox.Valid.ValidaCPF;
+import com.meuamericanet.redetelecom.view.LoginActivity;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,13 +66,25 @@ public class LoginViewModel extends BaseObservable {
         notifyPropertyChanged(BR.toastMessage);
     }
 
-    public void afterEmailTextChanged(CharSequence s) {
+    public void afterCPFCNPJTextChanged(CharSequence s) {
         cpfCnpjInformado.setValue(s.toString());
+        // Máscara de CPF/CNPJ
+        if (Objects.requireNonNull(cpfCnpjInformado.getValue()).length() == 11) {
+            cpfCnpjInformado.setValue(Ferramentas.mascaraCPF(cpfCnpjInformado.getValue()));
+        } else {
+            if (Objects.requireNonNull(cpfCnpjInformado.getValue()).length() == 14) {
+//                usuario.setTipoCliente("J");
+                cpfCnpjInformado.setValue(Ferramentas.mascaraCPF(cpfCnpjInformado.getValue()));
+            }
+        }
+
     }
 
-    public void afterPasswordTextChanged(CharSequence s) {
+    public void afterSenhaTextChanged(CharSequence s) {
         senhaInformada.setValue(s.toString());
     }
+
+
 
     /**
      * Botão responsável por chamar API de validação do login
@@ -76,45 +92,33 @@ public class LoginViewModel extends BaseObservable {
      * @author      Igor Maximo
      * @date        15/09/2021
      */
-    public void setOnClickBotaoAcessar() {
+    public void setOnClickBotaoAcessar(Context context) {
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(VariaveisGlobais.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         // Entidade carregada com os dados retornados da API
         UsuarioAPI usuarioAPI = retrofit.create(UsuarioAPI.class);
+
+        AlertDialog dialog = Ferramentas.setShowProgressDialog(context);
+
         // POST - REQUEST
         final Call<List<UsuarioLogin>> usuarioCall = usuarioAPI.selectAutenticacao(cpfCnpjInformado.getValue());
         usuarioCall.enqueue(new Callback<List<UsuarioLogin>>() {
             @Override
             public void onResponse(Call<List<UsuarioLogin>> call, Response<List<UsuarioLogin>> response) {
 
+
                 System.out.println("1=====> " + response.body().get(0).getCodClie());
                 System.out.println("1=====> " + response.body().get(0).getNomeRazaoSocial());
                 System.out.println("1=====> " + response.body().get(0).getCpfCnpj());
                 System.out.println("1=====> " + response.body().get(0).getSenha());
+                System.out.println(response.body().get(0).getCpfCnpj()  + " == " + (cpfCnpjInformado.getValue()) + " && " + response.body().get(0).getSenha()  + " == " + (senhaInformada.getValue()));
 
 
-                if (!response.body().get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue())) {
-                    setToastMessage("CPF/CNPJ não encontrado");
-                    return;
-                }
-
-                if (response.body().get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue()) && response.body().get(0).getCpfCnpj().equals(senhaInformada.getValue())) {
-                    setToastMessage(successMessage);
-                    return;
-                }
-
-                /*
-                ////////////////////////////////////
-                if (usuario.getValue().isInputDataValid()) {
-                    setToastMessage(successMessage);
-                } else {
-                    setToastMessage(errorMessage);
-                }
-                */
+                dialog.dismiss();
             }
-
 
             @Override
             public void onFailure(Call<List<UsuarioLogin>> call, Throwable t) {
@@ -122,6 +126,41 @@ public class LoginViewModel extends BaseObservable {
             }
         });
 
+        UsuarioLogin us = new UsuarioLogin();
+
+        System.out.println(us.getCpfCnpj());
+        System.out.println(us.getNomeRazaoSocial());
+
+
+
+/*
+
+        boolean seJuridica = false;
+        if (cpfCnpjInformado.getValue().length() > 14) {
+            seJuridica = true;
+        }
+        if (seJuridica) {
+            // Valida CPF
+            if (!ValidaCPF.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
+                return new Object[] {false, "CPF inválido"};
+            }
+        } else {
+            // Valida CNPJ
+            if (!ValidaCNPJ.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
+                return new Object[] {false, "CNPJ inválido"};
+            }
+        }
+
+        if (!response.body().get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue())) {
+            setToastMessage("CPF/CNPJ não encontrado");
+            return;
+        }
+
+        if (response.body().get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue()) && response.body().get(0).getSenha().equals(senhaInformada.getValue())) {
+            setToastMessage(successMessage);
+            return;
+        }
+*/
 
 
 
@@ -134,36 +173,9 @@ public class LoginViewModel extends BaseObservable {
                 .baseUrl(VariaveisGlobais.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        // Entidade carregada com os dados retornados da API
-        UsuarioAPI usuarioAPI = retrofit.create(UsuarioAPI.class);
-        // POST - REQUEST
-        final Call<UsuarioLogin> usuarioCall = usuarioAPI.selectAutenticacao(user.getEmail());
-        usuarioCall.enqueue(new Callback<UsuarioLogin>() {
-            @Override
-            public void onResponse(Call<UsuarioLogin> call, Response<UsuarioLogin> response) {
-                System.out.println("1=====> " + response.toString());
-                int statusCode = response.code();
-                String cpfCnpj = response.toString();
-
-                System.out.println("1=====> " + cpfCnpj);
-                System.out.println("1=====> " + cpfCnpj.toString());
-
-                Log.e("sdasd", cpfCnpj);
-                //Log.w("response",new Gson().toJson(response));
-                Log.w("response",new GsonBuilder().setPrettyPrinting().create().toJson(response));
-                //  recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
-            }
-
-            @Override
-            public void onFailure(Call<UsuarioLogin> call, Throwable t) {
-                System.out.println("2=====> " + t.getMessage());
-            }
-        });
         */
-
-
-
-
-
     }
+
+
+
 }

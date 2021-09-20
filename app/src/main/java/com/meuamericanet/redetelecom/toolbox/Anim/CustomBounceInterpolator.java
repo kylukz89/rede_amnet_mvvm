@@ -1,4 +1,4 @@
-package com.meuamericanet.redetelecom.toolbox;
+package com.meuamericanet.redetelecom.toolbox.Anim;
 
 public class CustomBounceInterpolator implements android.view.animation.Interpolator {
     private double mAmplitude = 1;

@@ -1,6 +1,7 @@
 package com.meuamericanet.redetelecom.view;
 
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,14 +19,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.meuamericanet.redetelecom.R;
 import com.meuamericanet.redetelecom.databinding.ActivityLoginBinding;
-import com.meuamericanet.redetelecom.toolbox.Animatoo;
-import com.meuamericanet.redetelecom.toolbox.CustomBounceInterpolator;
+import com.meuamericanet.redetelecom.toolbox.Anim.Animatoo;
+import com.meuamericanet.redetelecom.toolbox.Anim.CustomBounceInterpolator;
 import com.meuamericanet.redetelecom.toolbox.Ferramentas;
 import com.meuamericanet.redetelecom.viewmodel.LoginViewModel;
 
@@ -38,7 +37,7 @@ import com.meuamericanet.redetelecom.viewmodel.LoginViewModel;
 public class LoginActivity extends AppCompatActivity {
 
     private final Ferramentas ferramenta = new Ferramentas();
-    private LoginViewModel loginViewModel;
+    public ProgressDialog mProgress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

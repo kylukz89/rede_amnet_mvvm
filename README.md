@@ -1,0 +1,1 @@
+# app_rede_simetra_android_MVVM

@@ -3,15 +3,20 @@ package com.meuamericanet.redetelecom.viewmodel;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
+import androidx.databinding.BindingAdapter;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.meuamericanet.redetelecom.BR;
+import com.meuamericanet.redetelecom.R;
 import com.meuamericanet.redetelecom.model.Usuario;
 import com.meuamericanet.redetelecom.model.UsuarioLogin;
 import com.meuamericanet.redetelecom.repository.UsuarioAPI;
@@ -48,6 +53,10 @@ public class LoginViewModel extends BaseObservable {
 
     @Bindable
     public String toastMessage = null;
+    @Bindable
+    public String campoCPFCNPJ = null;
+    @Bindable
+    public String campoSenha = null;
 
     // Construtor da classe
     public LoginViewModel() {
@@ -68,20 +77,44 @@ public class LoginViewModel extends BaseObservable {
 
     public void afterCPFCNPJTextChanged(CharSequence s) {
         cpfCnpjInformado.setValue(s.toString());
-        // Máscara de CPF/CNPJ
-        if (Objects.requireNonNull(cpfCnpjInformado.getValue()).length() == 11) {
-            cpfCnpjInformado.setValue(Ferramentas.mascaraCPF(cpfCnpjInformado.getValue()));
-        } else {
-            if (Objects.requireNonNull(cpfCnpjInformado.getValue()).length() == 14) {
-//                usuario.setTipoCliente("J");
-                cpfCnpjInformado.setValue(Ferramentas.mascaraCPF(cpfCnpjInformado.getValue()));
-            }
-        }
-
     }
 
     public void afterSenhaTextChanged(CharSequence s) {
         senhaInformada.setValue(s.toString());
+    }
+
+
+    /**
+     * Insere máscara pertinente ao documento
+     *
+     * @author      Igor Maximo
+     * @date        15/09/2021
+     */
+    public void setMascara() {
+        // Máscara de CPF/CNPJ
+        if (Objects.requireNonNull(cpfCnpjInformado.getValue()).length() == 11) {
+            this.campoCPFCNPJ = Ferramentas.mascaraCPF(cpfCnpjInformado.getValue());
+            notifyPropertyChanged(BR.campoCPFCNPJ);
+        } else {
+            if (Objects.requireNonNull(cpfCnpjInformado.getValue()).length() == 14) {
+                this.campoCPFCNPJ = Ferramentas.mascaraCPF(cpfCnpjInformado.getValue());
+                notifyPropertyChanged(BR.campoCPFCNPJ);
+            }
+        }
+    }
+
+    /**
+     * Evento do edittext campoCPFCNPJ
+     *
+     * @author      Igor Maximo
+     * @date        15/09/2021
+     */
+    public EditText.OnFocusChangeListener getNameFocusListener() {
+        return (v, hasFocus) -> {
+            if (!hasFocus) {
+                setMascara();
+            }
+        };
     }
 
 
@@ -93,6 +126,23 @@ public class LoginViewModel extends BaseObservable {
      * @date        15/09/2021
      */
     public void setOnClickBotaoAcessar(Context context) {
+        boolean seJuridica = false;
+        if (cpfCnpjInformado.getValue().length() > 14) {
+            seJuridica = true;
+        }
+        if (!seJuridica) {
+            // Valida CPF
+            if (!ValidaCPF.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
+                setToastMessage("CPF inválido");
+                return;
+            }
+        } else {
+            // Valida CNPJ
+            if (!ValidaCNPJ.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
+                setToastMessage("CNPJ inválido");
+                return;
+            }
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(VariaveisGlobais.BASE_URL)
@@ -100,22 +150,21 @@ public class LoginViewModel extends BaseObservable {
                 .build();
         // Entidade carregada com os dados retornados da API
         UsuarioAPI usuarioAPI = retrofit.create(UsuarioAPI.class);
-
         AlertDialog dialog = Ferramentas.setShowProgressDialog(context);
-
         // POST - REQUEST
         final Call<List<UsuarioLogin>> usuarioCall = usuarioAPI.selectAutenticacao(cpfCnpjInformado.getValue());
         usuarioCall.enqueue(new Callback<List<UsuarioLogin>>() {
             @Override
             public void onResponse(Call<List<UsuarioLogin>> call, Response<List<UsuarioLogin>> response) {
-
-
                 System.out.println("1=====> " + response.body().get(0).getCodClie());
                 System.out.println("1=====> " + response.body().get(0).getNomeRazaoSocial());
                 System.out.println("1=====> " + response.body().get(0).getCpfCnpj());
                 System.out.println("1=====> " + response.body().get(0).getSenha());
                 System.out.println(response.body().get(0).getCpfCnpj()  + " == " + (cpfCnpjInformado.getValue()) + " && " + response.body().get(0).getSenha()  + " == " + (senhaInformada.getValue()));
 
+                if (Boolean.parseBoolean(String.valueOf(setValidacao(response.body())[0]))) {
+
+                }
 
                 dialog.dismiss();
             }
@@ -126,45 +175,6 @@ public class LoginViewModel extends BaseObservable {
             }
         });
 
-        UsuarioLogin us = new UsuarioLogin();
-
-        System.out.println(us.getCpfCnpj());
-        System.out.println(us.getNomeRazaoSocial());
-
-
-
-/*
-
-        boolean seJuridica = false;
-        if (cpfCnpjInformado.getValue().length() > 14) {
-            seJuridica = true;
-        }
-        if (seJuridica) {
-            // Valida CPF
-            if (!ValidaCPF.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
-                return new Object[] {false, "CPF inválido"};
-            }
-        } else {
-            // Valida CNPJ
-            if (!ValidaCNPJ.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
-                return new Object[] {false, "CNPJ inválido"};
-            }
-        }
-
-        if (!response.body().get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue())) {
-            setToastMessage("CPF/CNPJ não encontrado");
-            return;
-        }
-
-        if (response.body().get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue()) && response.body().get(0).getSenha().equals(senhaInformada.getValue())) {
-            setToastMessage(successMessage);
-            return;
-        }
-*/
-
-
-
-
         /*
         // Prepara interface para requisição da API de usuário autenticação
         Gson gson = new GsonBuilder().registerTypeAdapter(Usuario.class, new UsuarioJSON()).create();
@@ -172,10 +182,21 @@ public class LoginViewModel extends BaseObservable {
                 .Builder()
                 .baseUrl(VariaveisGlobais.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-        */
+                .build(); */
     }
 
+    private Object[] setValidacao(List<UsuarioLogin> autenticacao) {
+        if (!autenticacao.get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue())) {
+            setToastMessage("CPF não encontrado");
+            return new Object[] {false, "CPF inválido"};
+        }
+
+        if (autenticacao.get(0).getCpfCnpj().equals(cpfCnpjInformado.getValue()) && autenticacao.get(0).getSenha().equals(senhaInformada.getValue())) {
+            setToastMessage(successMessage);
+            return new Object[] {false, "CNPJ inválido"};
+        }
+        return new Object[] {true};
+    }
 
 
 }

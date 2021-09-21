@@ -77,6 +77,8 @@
                         android:hint="    CPF / CNPJ"
                         android:inputType="phone"
                         android:padding="8dp"
+                        android:text="@={ViewModel.campoCPFCNPJ}"
+                        app:onFocusChangeListener="@{ViewModel.nameFocusListener}"
                         android:textColorHint="@color/input_drawable_fields" />
 
                     <EditText
@@ -89,6 +91,7 @@
                         android:hint="    Senha"
                         android:inputType="textPassword"
                         android:padding="8dp"
+                        android:text="@={ViewModel.campoSenha}"
                         android:textColorHint="@color/input_drawable_fields" />
 
                     <TextView

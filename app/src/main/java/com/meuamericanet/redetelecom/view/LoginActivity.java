@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,38 +58,20 @@ public class LoginActivity extends AppCompatActivity {
         ActivityLoginBinding activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         activityMainBinding.setViewModel(new LoginViewModel());
         activityMainBinding.executePendingBindings();
-
-        //        LoginViewModel loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-
-
-
-
-
-
-
-//        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-//        loginViewModel.
-//        loginViewModel.setOnClickBotaoAcessar();
-
-
-
-
-
-
-
         // Animação de interpolação da esquerda para direita
         startaAnimacao(findViewById(R.id.cardViewLogin), findViewById(R.id.textViewTorneseCliente));
         TextView textViewEsqueciSenha = (TextView) findViewById(R.id.textViewProblemasAcesso);
         // Sombreamento dos elementos
         float nivelSombra = 7f;
         int corSombra = Color.parseColor("#07000000");
-        this.ferramenta.setSombraTextView(findViewById(R.id.textViewTitulo), nivelSombra, corSombra);
+        this.ferramenta.setSombraTextView(findViewById(R.id.textViewTitulo), nivelSombra, Color.GRAY);
         this.ferramenta.setSombraTextView(findViewById(R.id.textViewProblemasAcesso), nivelSombra, corSombra);
         this.ferramenta.setSombraTextView(findViewById(R.id.textViewTorneseCliente), nivelSombra, corSombra);
         this.ferramenta.setSombraTextView(textViewEsqueciSenha, nivelSombra, corSombra);
         this.ferramenta.setSombraEditText(findViewById(R.id.campoCPFCNPJ), nivelSombra, corSombra);
         this.ferramenta.setSombraEditText(findViewById(R.id.campoSenha), nivelSombra, corSombra);
         this.ferramenta.setSombraEditText(findViewById(R.id.editTextCampoCPFEsqueciSenha), nivelSombra, corSombra);
+        this.ferramenta.setSombraTextView(findViewById(R.id.slogan), 3f, Color.WHITE);
         // Bottom sheet de esqueci minha senha
         textViewEsqueciSenha.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +86,14 @@ public class LoginActivity extends AppCompatActivity {
     public static void runMe(View view, String message) {
         if (message != null) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @BindingAdapter({"setErrorField"})
+    public static void setErrorField(EditText editText, String message) {
+        if (message != null) {
+            editText.setError(message);
         }
     }
 

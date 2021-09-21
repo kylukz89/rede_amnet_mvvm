@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -57,6 +58,8 @@ public class LoginViewModel extends BaseObservable {
     public String campoCPFCNPJ = null;
     @Bindable
     public String campoSenha = null;
+    @Bindable
+    public String setErrorField = null;
 
     // Construtor da classe
     public LoginViewModel() {
@@ -83,7 +86,6 @@ public class LoginViewModel extends BaseObservable {
         senhaInformada.setValue(s.toString());
     }
 
-
     /**
      * Insere máscara pertinente ao documento
      *
@@ -109,7 +111,7 @@ public class LoginViewModel extends BaseObservable {
      * @author      Igor Maximo
      * @date        15/09/2021
      */
-    public EditText.OnFocusChangeListener getNameFocusListener() {
+    public EditText.OnFocusChangeListener getCampoCPFCNPJFocusListener() {
         return (v, hasFocus) -> {
             if (!hasFocus) {
                 setMascara();
@@ -117,7 +119,21 @@ public class LoginViewModel extends BaseObservable {
         };
     }
 
-
+    /**
+     * Evento do edittext campoCPFCNPJ
+     *
+     * @author      Igor Maximo
+     * @date        15/09/2021
+     */
+    public EditText.OnKeyListener getCampoCPFCNPJKeyListener() {
+        return (v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_DEL) {
+                this.campoCPFCNPJ = "";
+                notifyPropertyChanged(BR.campoCPFCNPJ);
+            }
+            return false;
+        };
+    }
 
     /**
      * Botão responsável por chamar API de validação do login
@@ -126,54 +142,60 @@ public class LoginViewModel extends BaseObservable {
      * @date        15/09/2021
      */
     public void setOnClickBotaoAcessar(Context context) {
-        boolean seJuridica = false;
-        if (cpfCnpjInformado.getValue().length() > 14) {
-            seJuridica = true;
-        }
-        if (!seJuridica) {
-            // Valida CPF
-            if (!ValidaCPF.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
-                setToastMessage("CPF inválido");
+        try {
+            if (cpfCnpjInformado.getValue() == null) {
+                notifyPropertyChanged(BR.setErrorField);
                 return;
             }
-        } else {
-            // Valida CNPJ
-            if (!ValidaCNPJ.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
-                setToastMessage("CNPJ inválido");
-                return;
+
+            boolean seJuridica = false;
+            if (cpfCnpjInformado.getValue().length() > 14) {
+                seJuridica = true;
             }
-        }
+            if (!seJuridica) {
+                // Valida CPF
+                if (!ValidaCPF.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
+                    setToastMessage("CPF inválido");
+                    return;
+                }
+            } else {
+                // Valida CNPJ
+                if (!ValidaCNPJ.valida(cpfCnpjInformado.getValue().replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]", "").replaceAll("[:]", "").replaceAll("[)]", ""))) {
+                    setToastMessage("CNPJ inválido");
+                    return;
+                }
+            }
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(VariaveisGlobais.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        // Entidade carregada com os dados retornados da API
-        UsuarioAPI usuarioAPI = retrofit.create(UsuarioAPI.class);
-        AlertDialog dialog = Ferramentas.setShowProgressDialog(context);
-        // POST - REQUEST
-        final Call<List<UsuarioLogin>> usuarioCall = usuarioAPI.selectAutenticacao(cpfCnpjInformado.getValue());
-        usuarioCall.enqueue(new Callback<List<UsuarioLogin>>() {
-            @Override
-            public void onResponse(Call<List<UsuarioLogin>> call, Response<List<UsuarioLogin>> response) {
-                System.out.println("1=====> " + response.body().get(0).getCodClie());
-                System.out.println("1=====> " + response.body().get(0).getNomeRazaoSocial());
-                System.out.println("1=====> " + response.body().get(0).getCpfCnpj());
-                System.out.println("1=====> " + response.body().get(0).getSenha());
-                System.out.println(response.body().get(0).getCpfCnpj()  + " == " + (cpfCnpjInformado.getValue()) + " && " + response.body().get(0).getSenha()  + " == " + (senhaInformada.getValue()));
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(VariaveisGlobais.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            // Entidade carregada com os dados retornados da API
+            UsuarioAPI usuarioAPI = retrofit.create(UsuarioAPI.class);
+            AlertDialog dialog = Ferramentas.setShowProgressDialog(context);
+            // POST - REQUEST
+            final Call<List<UsuarioLogin>> usuarioCall = usuarioAPI.selectAutenticacao(cpfCnpjInformado.getValue());
+            usuarioCall.enqueue(new Callback<List<UsuarioLogin>>() {
+                @Override
+                public void onResponse(Call<List<UsuarioLogin>> call, Response<List<UsuarioLogin>> response) {
+                    System.out.println("1=====> " + response.body().get(0).getCodClie());
+                    System.out.println("1=====> " + response.body().get(0).getNomeRazaoSocial());
+                    System.out.println("1=====> " + response.body().get(0).getCpfCnpj());
+                    System.out.println("1=====> " + response.body().get(0).getSenha());
+                    System.out.println(response.body().get(0).getCpfCnpj()  + " == " + (cpfCnpjInformado.getValue()) + " && " + response.body().get(0).getSenha()  + " == " + (senhaInformada.getValue()));
 
-                if (Boolean.parseBoolean(String.valueOf(setValidacao(response.body())[0]))) {
+                    if (Boolean.parseBoolean(String.valueOf(setValidacao(response.body())[0]))) {
 
+                    }
+
+                    dialog.dismiss();
                 }
 
-                dialog.dismiss();
-            }
-
-            @Override
-            public void onFailure(Call<List<UsuarioLogin>> call, Throwable t) {
-                System.out.println("2=====> " + t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<List<UsuarioLogin>> call, Throwable t) {
+                    System.out.println("2=====> " + t.getMessage());
+                }
+            });
 
         /*
         // Prepara interface para requisição da API de usuário autenticação
@@ -183,6 +205,9 @@ public class LoginViewModel extends BaseObservable {
                 .baseUrl(VariaveisGlobais.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build(); */
+        } catch (Exception e) {
+
+        }
     }
 
     private Object[] setValidacao(List<UsuarioLogin> autenticacao) {

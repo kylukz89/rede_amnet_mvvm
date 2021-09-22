@@ -17,7 +17,6 @@
         android:background="@drawable/curved"
         android:orientation="horizontal">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -42,22 +41,17 @@
                 android:textSize="18dp" />
         </LinearLayout>
 
-
-
         <androidx.cardview.widget.CardView
             android:id="@+id/cardViewLogin"
             android:layout_width="match_parent"
-            android:layout_height="420dp"
+            android:layout_height="405dp"
             android:layout_marginTop="135dp"
             android:background="@drawable/background_gradient_cinza"
             android:visibility="gone"
             app:cardCornerRadius="30dp"
-            app:cardElevation="25dp"
-            app:cardMaxElevation="35dp"
-            android:elevation="5dp"
+            app:cardElevation="20dp"
+            app:cardMaxElevation="30dp"
             app:cardUseCompatPadding="true">
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -94,7 +88,7 @@
                     app:onFocusChangeListener="@{ViewModel.campoCPFCNPJFocusListener}"
                     app:onKeyListener="@{ViewModel.campoCPFCNPJKeyListener}"
                     android:textColorHint="@color/input_drawable_fields"
-                    bind:setErrorField="@{ViewModel.setErrorField}"/>
+                    bind:setErrorField="@{ViewModel.setErrorFieldCampoCPFCNPJ}"/>
 
                 <EditText
                     android:id="@+id/campoSenha"
@@ -107,7 +101,8 @@
                     android:inputType="textPassword"
                     android:padding="8dp"
                     android:text="@={ViewModel.campoSenha}"
-                    android:textColorHint="@color/input_drawable_fields" />
+                    android:textColorHint="@color/input_drawable_fields"
+                    bind:setErrorField="@{ViewModel.setErrorFieldCampoSenha}"/>
 
                 <TextView
                     android:id="@+id/textViewProblemasAcesso"
@@ -136,7 +131,9 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:onClick="@{()-> ViewModel.setOnClickBotaoAcessar(context)}"
-                        android:text="Acessar"
+                        android:paddingLeft="10dp"
+                        android:text="Acessar        "
+                        android:drawableLeft="@drawable/ic_ok"
                         android:textColor="@color/white"
                         android:textStyle="bold"
                         bind:toastMessage="@{ViewModel.toastMessage}" />
@@ -183,6 +180,7 @@
             android:layout_margin="0dp"
             android:background="#B3000000"
             android:visibility="gone"
+            android:elevation="22dp"
             android:id="@+id/my_relative_layout">
         </RelativeLayout>
 

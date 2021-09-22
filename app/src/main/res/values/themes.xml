@@ -9,10 +9,31 @@
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
+
+
+        <item name="background">@color/purple_200</item>
+
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+    </style>
 
+    <!-- PROGRESS BAR DIALOG CUSTOM-->
+
+    <style name="ProgressDialogFullScreen">
+        <item name="colorAccent">@color/laranja_americanet</item>
+    </style>
+
+    <style name="RelativeLayoutProgressDialogFullScreen">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+
+
+
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
 
     </style>
+
 </resources>

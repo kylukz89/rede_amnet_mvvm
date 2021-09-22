@@ -20,6 +20,7 @@ import android.text.format.Formatter;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -72,13 +73,33 @@ public final class Ferramentas {
      * @date        20/09/2021
      */
     public static AlertDialog setShowProgressDialog(Context context) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setView(R.layout.progress_dialog_custom);
+//        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, R.style.RelativeLayoutProgressDialogFullScreen);
+//        builder.setView(R.layout.progress_dialog_fullscreen_custom);
+//        final AlertDialog dialog = builder.show();
+//        // Define full screen para um alert dialog qualquer...
+//        Window window = dialog.getWindow();
+//        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        return dialog;
+
+
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.RelativeLayoutProgressDialogFullScreen);
+        builder.setView(R.layout.progress_dialog_fullscreen_custom);
         final AlertDialog dialog = builder.show();
+        // Define full screen para um alert dialog qualquer...
+        Window window = dialog.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         return dialog;
+
+
+
+        //        Window window = dialog.getWindow();
+//        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        return builder.show();
+
+
     }
-
-
 
     public static String[] concatenaVetores(String[] vetor1, String[] vetor2) {
         final int length = vetor1.length + vetor2.length;
@@ -259,11 +280,11 @@ public final class Ferramentas {
     }
 
 
-    public static String mascaraCPF(String CPF) {
+    public static String setMascaraCPF(String CPF) {
         return CPF.substring(0, 3) + "." + CPF.substring(3, 6) + "." + CPF.substring(6, 9) + "-" + CPF.substring(9, CPF.length());
     }
 
-    public static String mascaraCNPJ(String CNPJ) {
+    public static String setMascaraCNPJ(String CNPJ) {
         return CNPJ.substring(0, 2) + "." + CNPJ.substring(2, 5) + "." + CNPJ.substring(5, 8) + "/" + CNPJ.substring(8, 12) + "-" + CNPJ.substring(12, CNPJ.length());
     }
 //

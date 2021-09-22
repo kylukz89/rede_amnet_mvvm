@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         float nivelSombra = 7f;
         int corSombra = Color.parseColor("#07000000");
         this.ferramenta.setSombraTextView(findViewById(R.id.textViewTitulo), nivelSombra, Color.GRAY);
+        this.ferramenta.setSombraTextView(findViewById(R.id.tituloEsqueciSenha), nivelSombra, Color.GRAY);
         this.ferramenta.setSombraTextView(findViewById(R.id.textViewProblemasAcesso), nivelSombra, corSombra);
         this.ferramenta.setSombraTextView(findViewById(R.id.textViewTorneseCliente), nivelSombra, corSombra);
         this.ferramenta.setSombraTextView(textViewEsqueciSenha, nivelSombra, corSombra);

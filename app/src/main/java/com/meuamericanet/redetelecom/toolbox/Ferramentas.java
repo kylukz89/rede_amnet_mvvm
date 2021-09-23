@@ -69,39 +69,28 @@ public final class Ferramentas {
     /**
      * Exibe progress dialog da operação em questão
      *
-     * @author      Igor Maximo
-     * @date        20/09/2021
+     * @author Igor Maximo
+     * @date 20/09/2021
      */
-    public static AlertDialog setShowProgressDialog(Context context) {
-//        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, R.style.RelativeLayoutProgressDialogFullScreen);
-//        builder.setView(R.layout.progress_dialog_fullscreen_custom);
-//        final AlertDialog dialog = builder.show();
-//        // Define full screen para um alert dialog qualquer...
-//        Window window = dialog.getWindow();
-//        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        return dialog;
-
-
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.RelativeLayoutProgressDialogFullScreen);
-        builder.setView(R.layout.progress_dialog_fullscreen_custom);
-        final AlertDialog dialog = builder.show();
-        // Define full screen para um alert dialog qualquer...
-        Window window = dialog.getWindow();
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        return dialog;
-
-
-
-        //        Window window = dialog.getWindow();
-//        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        return builder.show();
-
-
+    public static AlertDialog setShowProgressDialog(Context context, boolean seFullScreen) {
+        if (!seFullScreen) {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+            builder.setView(R.layout.progress_dialog_custom);
+            final AlertDialog dialog = builder.show();
+            dialog.getWindow();
+            return dialog;
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.RelativeLayoutProgressDialogFullScreen);
+            builder.setView(R.layout.progress_dialog_fullscreen_custom);
+            final AlertDialog dialog = builder.show();
+            // Define full screen para um alert dialog qualquer...
+            Window window = dialog.getWindow();
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            return dialog;
+        }
     }
 
-    public static String[] concatenaVetores(String[] vetor1, String[] vetor2) {
+    public static String[] setConcatenarVetores(String[] vetor1, String[] vetor2) {
         final int length = vetor1.length + vetor2.length;
         String[] vetorConcatenado = new String[length];
 
@@ -339,8 +328,8 @@ public final class Ferramentas {
     /**
      * Retorna a bandeira do cartão com base na numeração
      *
-     * @author  Igor Maximo
-     * @date    21/06/2021
+     * @author Igor Maximo
+     * @date 21/06/2021
      */
     public static String getBandeiraCartao(String cartaoNumero) {
         /*
@@ -426,8 +415,8 @@ public final class Ferramentas {
     /**
      * Verifica se todos os campos de um form foram preenchidos
      *
-     * @author  Igor Maximo
-     * @date    21/06/2021
+     * @author Igor Maximo
+     * @date 21/06/2021
      */
     public static boolean getVerificaTodosCamposPreenchidos(boolean[] campos, Context ctx) {
         boolean status = false;
@@ -546,6 +535,26 @@ public final class Ferramentas {
      */
     public void setSombraEditText(EditText editText, int cor) {
         editText.setShadowLayer(7.0f, 0, 0, Color.GRAY);
+    }
+
+    /**
+     * Seta sombreamento em texto de editText
+     *
+     * @author Igor Maximo
+     * @date 13/09/2021
+     */
+    public void setSombraEditText(EditText editText, float espessura, int cor, float dx, float dy) {
+        editText.setShadowLayer(espessura, dx, dy, Color.GRAY);
+    }
+
+    /**
+     * Extrai apenas números de uma string
+     *
+     * @author  Igor Maximo
+     * @date    22/09/2021
+     */
+    public static String setExtrairNumeroString(String str) {
+        return str.replaceAll("\\D+","");
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.meuamericanet.redetelecom.viewmodel;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.widget.EditText;
@@ -40,8 +41,6 @@ public class LoginViewModel extends BaseObservable {
     private String cpfCnpjInformado;
     private String senhaInformada;
 
-    private String successMessage = "Login was successful";
-    private String errorMessage = "Email or Password not valid";
 
     @Bindable
     public String toastMessage = null;
@@ -53,6 +52,8 @@ public class LoginViewModel extends BaseObservable {
     public String setErrorFieldCampoCPFCNPJ = null;
     @Bindable
     public String setErrorFieldCampoSenha = null;
+
+    boolean seJuridica = false;
 
     // Construtor da classe
     public LoginViewModel() {
@@ -155,7 +156,7 @@ public class LoginViewModel extends BaseObservable {
                 return;
             }
 
-            boolean seJuridica = false;
+
             if (cpfCnpjInformado.length() > 14) {
                 seJuridica = true;
             }
@@ -179,28 +180,21 @@ public class LoginViewModel extends BaseObservable {
                     .build();
             // Entidade carregada com os dados retornados da API
             UsuarioAPI usuarioAPI = retrofit.create(UsuarioAPI.class);
-            AlertDialog dialog = Ferramentas.setShowProgressDialog(context);
+            Dialog dialog = Ferramentas.setShowProgressDialog(context, true);
             // POST - REQUEST
             final Call<List<UsuarioLogin>> usuarioCall = usuarioAPI.selectAutenticacao(cpfCnpjInformado);
             usuarioCall.enqueue(new Callback<List<UsuarioLogin>>() {
                 @Override
                 public void onResponse(Call<List<UsuarioLogin>> call, Response<List<UsuarioLogin>> response) {
-                    System.out.println("1=====> " + response.body().get(0).getCodClie());
-                    System.out.println("1=====> " + response.body().get(0).getNomeRazaoSocial());
-                    System.out.println("1=====> " + response.body().get(0).getCpfCnpj());
-                    System.out.println("1=====> " + response.body().get(0).getSenha());
-                    System.out.println(response.body().get(0).getCpfCnpj()  + " == " + (cpfCnpjInformado) + " && " + response.body().get(0).getSenha()  + " == " + (senhaInformada));
-
                     if (Boolean.parseBoolean(String.valueOf(setValidacao(response.body())[0]))) {
 
                     }
-
                     dialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(Call<List<UsuarioLogin>> call, Throwable t) {
-                    System.out.println("2=====> " + t.getMessage());
+                    dialog.dismiss();
                 }
             });
 
@@ -218,15 +212,23 @@ public class LoginViewModel extends BaseObservable {
     }
 
     private Object[] setValidacao(List<UsuarioLogin> autenticacao) {
-        if (!autenticacao.get(0).getCpfCnpj().equals(cpfCnpjInformado)) {
-            setToastMessage("CPF não encontrado");
-            return new Object[] {false, "CPF inválido"};
+        if (this.seJuridica) {
+            if (autenticacao.get(0).getCpfCnpj().equals(Ferramentas.setExtrairNumeroString(cpfCnpjInformado))) {
+                setToastMessage("CNPJ inválido");
+                return new Object[] {false, "CNPJ inválido"};
+            }
+        } else {
+            if (!autenticacao.get(0).getCpfCnpj().equals(Ferramentas.setExtrairNumeroString(cpfCnpjInformado))) {
+                setToastMessage("CPF não encontrado");
+                return new Object[] {false, "CPF inválido"};
+            }
         }
 
-        if (autenticacao.get(0).getCpfCnpj().equals(cpfCnpjInformado) && autenticacao.get(0).getSenha().equals(senhaInformada)) {
-            setToastMessage(successMessage);
-            return new Object[] {false, "CNPJ inválido"};
+        if (!autenticacao.get(0).getSenha().equals(senhaInformada)) {
+            setToastMessage("Senha incorreta");
+            return new Object[] {false, "Senha incorreta"};
         }
+
         return new Object[] {true};
     }
 

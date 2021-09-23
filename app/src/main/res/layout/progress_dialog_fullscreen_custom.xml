@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/progress_dialog_custom"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background_gradient_progresdialog_fullscreen"
-    android:layout_gravity="center"
-    android:foregroundGravity="center"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/background_gradient_progresdialog_fullscreen"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -26,5 +30,8 @@
             android:gravity="center"
             android:text="Processando..."
             android:textColor="@color/white"
+            android:textSize="18sp"
             android:textStyle="bold" />
-</LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

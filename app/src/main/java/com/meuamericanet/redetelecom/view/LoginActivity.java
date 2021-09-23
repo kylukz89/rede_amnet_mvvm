@@ -62,17 +62,19 @@ public class LoginActivity extends AppCompatActivity {
         startaAnimacao(findViewById(R.id.cardViewLogin), findViewById(R.id.textViewTorneseCliente));
         TextView textViewEsqueciSenha = (TextView) findViewById(R.id.textViewProblemasAcesso);
         // Sombreamento dos elementos
-        float nivelSombra = 7f;
-        int corSombra = Color.parseColor("#07000000");
-        this.ferramenta.setSombraTextView(findViewById(R.id.textViewTitulo), nivelSombra, Color.GRAY);
-        this.ferramenta.setSombraTextView(findViewById(R.id.tituloEsqueciSenha), nivelSombra, Color.GRAY);
-        this.ferramenta.setSombraTextView(findViewById(R.id.textViewProblemasAcesso), nivelSombra, corSombra);
-        this.ferramenta.setSombraTextView(findViewById(R.id.textViewTorneseCliente), nivelSombra, corSombra);
-        this.ferramenta.setSombraTextView(textViewEsqueciSenha, nivelSombra, corSombra);
-        this.ferramenta.setSombraEditText(findViewById(R.id.campoCPFCNPJ), nivelSombra, corSombra);
-        this.ferramenta.setSombraEditText(findViewById(R.id.campoSenha), nivelSombra, corSombra);
-        this.ferramenta.setSombraEditText(findViewById(R.id.editTextCampoCPFEsqueciSenha), nivelSombra, corSombra);
-        this.ferramenta.setSombraTextView(findViewById(R.id.slogan), 3f, Color.WHITE);
+        float nivelSombra = 15f;
+        float dx = 0f;
+        float dy = 2.8f;
+        int corSombra = Color.parseColor("#09000000");
+        this.ferramenta.setSombraTextView(findViewById(R.id.textViewTitulo), nivelSombra, Color.GRAY, dx, dy);
+        this.ferramenta.setSombraTextView(findViewById(R.id.tituloEsqueciSenha), nivelSombra, Color.GRAY, dx, dy);
+        this.ferramenta.setSombraTextView(textViewEsqueciSenha, nivelSombra, corSombra, dx, dy);
+        this.ferramenta.setSombraTextView(findViewById(R.id.textViewTorneseCliente), nivelSombra, corSombra, dx, dy);
+        this.ferramenta.setSombraTextView(textViewEsqueciSenha, nivelSombra, corSombra, dx, dy);
+//        this.ferramenta.setSombraTextView(findViewById(R.id.slogan), 3f, Color.WHITE, dx, dy);
+        this.ferramenta.setSombraEditText(findViewById(R.id.campoCPFCNPJ), nivelSombra, corSombra, dx, dy);
+        this.ferramenta.setSombraEditText(findViewById(R.id.campoSenha), nivelSombra, corSombra, dx, dy);
+        this.ferramenta.setSombraEditText(findViewById(R.id.editTextCampoCPFEsqueciSenha), nivelSombra, corSombra, dx, dy);
         // Bottom sheet de esqueci minha senha
         textViewEsqueciSenha.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,6 +1,9 @@
 package com.meuamericanet.redetelecom.toolbox;
 
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +11,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -18,6 +23,7 @@ import android.os.Vibrator;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -33,6 +39,9 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.meuamericanet.redetelecom.R;
 import com.meuamericanet.redetelecom.toolbox.Config.VariaveisGlobais;
+import com.meuamericanet.redetelecom.view.LoginActivity;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -81,7 +90,31 @@ public final class Ferramentas {
             return dialog;
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.RelativeLayoutProgressDialogFullScreen);
-            builder.setView(R.layout.progress_dialog_fullscreen_custom);
+            View view = LayoutInflater.from(context).inflate(R.layout.progress_dialog_fullscreen_custom,null);
+            builder.setView(view);
+
+            ProgressBar mProgressDialog = (ProgressBar) view.findViewById(R.id.progressBar);
+
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(200);
+                        Drawable drawable = context.getResources().getDrawable(R.drawable.ic_ok);
+                        Rect bounds = mProgressDialog.getIndeterminateDrawable().getBounds(); // re-use bounds from current drawable
+                        mProgressDialog.setIndeterminateDrawable(drawable); // set new drawable
+                        mProgressDialog.getIndeterminateDrawable().setBounds(bounds); // set bounds to new drawable
+                    } catch (Exception e) {
+                        //
+                    }
+                }
+            }.start();
+
+
+
+
+
+
             final AlertDialog dialog = builder.show();
             // Define full screen para um alert dialog qualquer...
             Window window = dialog.getWindow();
@@ -90,6 +123,12 @@ public final class Ferramentas {
         }
     }
 
+    /**
+     * Concatena 02 vetores
+     *
+     * @author Igor Maximo
+     * @date 20/09/2021
+     */
     public static String[] setConcatenarVetores(String[] vetor1, String[] vetor2) {
         final int length = vetor1.length + vetor2.length;
         String[] vetorConcatenado = new String[length];

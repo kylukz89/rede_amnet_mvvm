@@ -42,6 +42,7 @@ public class LoginViewModel extends BaseObservable {
     private String senhaInformada;
 
 
+    
     @Bindable
     public String toastMessage = null;
     @Bindable

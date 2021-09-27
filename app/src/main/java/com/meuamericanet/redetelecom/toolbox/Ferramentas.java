@@ -27,17 +27,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.meuamericanet.redetelecom.R;
+import com.meuamericanet.redetelecom.toolbox.Anim.CustomBounceInterpolator;
 import com.meuamericanet.redetelecom.toolbox.Config.VariaveisGlobais;
 import com.meuamericanet.redetelecom.view.LoginActivity;
 
@@ -81,7 +87,7 @@ public final class Ferramentas {
      * @author Igor Maximo
      * @date 20/09/2021
      */
-    public static AlertDialog setShowProgressDialog(Context context, boolean seFullScreen) {
+    public static AlertDialog setShowProgressDialog(Context context, boolean seSucessoOuErro, boolean seFullScreen) {
         if (!seFullScreen) {
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
             builder.setView(R.layout.progress_dialog_custom);
@@ -92,26 +98,135 @@ public final class Ferramentas {
             AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.RelativeLayoutProgressDialogFullScreen);
             View view = LayoutInflater.from(context).inflate(R.layout.progress_dialog_fullscreen_custom,null);
             builder.setView(view);
+            ///////////////////////
+/*
+            if (seSucessoOuErro) {
+                LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.progressCorFundo);
+                ProgressBar mProgressDialog = (ProgressBar) view.findViewById(R.id.progressBar);
+                TextView textViewProgress = (TextView) view.findViewById(R.id.textViewProgressDialog);
+                ///////////////////////
+                Thread threadAnimacao = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(5000);
 
-            ProgressBar mProgressDialog = (ProgressBar) view.findViewById(R.id.progressBar);
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ////////////////////////////////////////////
+                                    // Background do processamento...
+                                    linearLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_gradient_progresdialog_fullscreen_sucesso));
+                                    linearLayout.setAlpha(0.5f);
+                                    linearLayout.animate()
+                                            .alpha(1.5f)
+                                            .setDuration(1500)
+                                            .setStartDelay(750)
+                                            .start();
+                                }
+                            });
 
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(200);
-                        Drawable drawable = context.getResources().getDrawable(R.drawable.ic_ok);
-                        Rect bounds = mProgressDialog.getIndeterminateDrawable().getBounds(); // re-use bounds from current drawable
-                        mProgressDialog.setIndeterminateDrawable(drawable); // set new drawable
-                        mProgressDialog.getIndeterminateDrawable().setBounds(bounds); // set bounds to new drawable
-                    } catch (Exception e) {
-                        //
+
+                            try {
+                                sleep(600);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ////////////////////////////////////////////
+                                    // Texto de processamento...
+                                    final Animation animacaotextViewProgress = AnimationUtils.loadAnimation(context, R.anim.animate_in_out_enter);
+                                    animacaotextViewProgress.setDuration(500);
+                                    textViewProgress.startAnimation(animacaotextViewProgress);
+                                    textViewProgress.setText("Sucesso");
+                                    ////////////////////////////////////////////
+                                    // Ícone do processamento...
+                                    Drawable drawable = context.getResources().getDrawable(R.drawable.ic_ok);
+                                    Rect bounds = mProgressDialog.getIndeterminateDrawable().getBounds(); // re-use bounds from current drawable
+                                    mProgressDialog.setIndeterminateDrawable(drawable); // set new drawable
+                                    mProgressDialog.getIndeterminateDrawable().setBounds(bounds); // set bounds to new drawable
+
+                                    final Animation animacaomProgressDialog = AnimationUtils.loadAnimation(context, R.anim.animate_shrink_enter);
+                                    animacaomProgressDialog.setDuration(500);
+                                    textViewProgress.startAnimation(animacaomProgressDialog);
+
+                                    mProgressDialog.startAnimation(animacaomProgressDialog);
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            System.out.println("==================> " + e.toString());
+                        }
                     }
-                }
-            }.start();
+                };
+                threadAnimacao.start();
+            } else {
+                LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.progressCorFundo);
+                ProgressBar mProgressDialog = (ProgressBar) view.findViewById(R.id.progressBar);
+                TextView textViewProgress = (TextView) view.findViewById(R.id.textViewProgressDialog);
+                ///////////////////////
+                Thread threadAnimacao = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(5000);
+
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ////////////////////////////////////////////
+                                    // Background do processamento...
+                                    linearLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_gradient_progresdialog_fullscreen_erro));
+                                    linearLayout.setAlpha(0.5f);
+                                    linearLayout.animate()
+                                            .alpha(1.5f)
+                                            .setDuration(1500)
+                                            .setStartDelay(750)
+                                            .start();
+                                }
+                            });
 
 
+                            try {
+                                sleep(600);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
 
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ////////////////////////////////////////////
+                                    // Texto de processamento...
+                                    final Animation animacaotextViewProgress = AnimationUtils.loadAnimation(context, R.anim.animate_in_out_enter);
+                                    animacaotextViewProgress.setDuration(500);
+                                    textViewProgress.startAnimation(animacaotextViewProgress);
+                                    textViewProgress.setText("Erro");
+                                    ////////////////////////////////////////////
+                                    // Ícone do processamento...
+                                    Drawable drawable = context.getResources().getDrawable(R.drawable.ic_erro);
+                                    Rect bounds = mProgressDialog.getIndeterminateDrawable().getBounds(); // re-use bounds from current drawable
+                                    mProgressDialog.setIndeterminateDrawable(drawable); // set new drawable
+                                    mProgressDialog.getIndeterminateDrawable().setBounds(bounds); // set bounds to new drawable
+
+                                    final Animation animacaomProgressDialog = AnimationUtils.loadAnimation(context, R.anim.animate_shrink_enter);
+                                    animacaomProgressDialog.setDuration(500);
+                                    textViewProgress.startAnimation(animacaomProgressDialog);
+
+                                    mProgressDialog.startAnimation(animacaomProgressDialog);
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            System.out.println("==================> " + e.toString());
+                        }
+                    }
+                };
+                threadAnimacao.start();
+            }*/
 
 
 

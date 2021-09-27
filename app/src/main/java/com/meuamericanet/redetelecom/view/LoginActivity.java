@@ -77,7 +77,6 @@ public class LoginActivity extends AppCompatActivity {
         this.ferramenta.setSombraTextView(findViewById(R.id.tituloEsqueciSenha), nivelSombra, Color.GRAY, dx, dy);
         this.ferramenta.setSombraTextView(textViewEsqueciSenha, nivelSombra, corSombra, dx, dy);
         this.ferramenta.setSombraTextView(findViewById(R.id.textViewTorneseCliente), nivelSombra, corSombra, dx, dy);
-        this.ferramenta.setSombraTextView(textViewEsqueciSenha, nivelSombra, corSombra, dx, dy);
 //        this.ferramenta.setSombraTextView(findViewById(R.id.slogan), 3f, Color.WHITE, dx, dy);
         this.ferramenta.setSombraEditText(findViewById(R.id.campoCPFCNPJ), nivelSombra, corSombra, dx, dy);
         this.ferramenta.setSombraEditText(findViewById(R.id.campoSenha), nivelSombra, corSombra, dx, dy);

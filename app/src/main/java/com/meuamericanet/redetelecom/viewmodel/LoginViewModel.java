@@ -1,16 +1,26 @@
 package com.meuamericanet.redetelecom.viewmodel;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.meuamericanet.redetelecom.BR;
+import com.meuamericanet.redetelecom.R;
 import com.meuamericanet.redetelecom.model.Usuario;
 import com.meuamericanet.redetelecom.model.UsuarioLogin;
 import com.meuamericanet.redetelecom.repository.UsuarioAPI;
@@ -42,7 +52,7 @@ public class LoginViewModel extends BaseObservable {
     private String senhaInformada;
 
 
-    
+
     @Bindable
     public String toastMessage = null;
     @Bindable
@@ -143,6 +153,7 @@ public class LoginViewModel extends BaseObservable {
      * @date        15/09/2021
      */
     public void setOnClickBotaoAcessar(Context context) {
+//        Ferramentas.setShowProgressDialog(context, false,true);
         try {
             // Valida se o campo está preenchido
             if (cpfCnpjInformado == null) {
@@ -181,21 +192,172 @@ public class LoginViewModel extends BaseObservable {
                     .build();
             // Entidade carregada com os dados retornados da API
             UsuarioAPI usuarioAPI = retrofit.create(UsuarioAPI.class);
-            Dialog dialog = Ferramentas.setShowProgressDialog(context, true);
+            Dialog dialog = Ferramentas.setShowProgressDialog(context, true, true);
             // POST - REQUEST
             final Call<List<UsuarioLogin>> usuarioCall = usuarioAPI.selectAutenticacao(cpfCnpjInformado);
             usuarioCall.enqueue(new Callback<List<UsuarioLogin>>() {
                 @Override
                 public void onResponse(Call<List<UsuarioLogin>> call, Response<List<UsuarioLogin>> response) {
-                    if (Boolean.parseBoolean(String.valueOf(setValidacao(response.body())[0]))) {
 
+
+
+                    if (Boolean.parseBoolean(String.valueOf(setValidacao(response.body())[0]))) {
+                        LinearLayout linearLayout = (LinearLayout) dialog.getWindow().findViewById(R.id.progressCorFundo);
+                        ProgressBar mProgressDialog = (ProgressBar) dialog.getWindow().findViewById(R.id.progressBar);
+                        TextView textViewProgress = (TextView) dialog.getWindow().findViewById(R.id.textViewProgressDialog);
+                        ///////////////////////
+                        Thread threadAnimacao = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(5000);
+
+                                    ((Activity) context).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ////////////////////////////////////////////
+                                            // Background do processamento...
+                                            linearLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_gradient_progresdialog_fullscreen_sucesso));
+                                            linearLayout.setAlpha(0.5f);
+                                            linearLayout.animate()
+                                                    .alpha(1.5f)
+                                                    .setDuration(1500)
+                                                    .setStartDelay(750)
+                                                    .start();
+                                        }
+                                    });
+
+
+                                    try {
+                                        sleep(600);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    ((Activity) context).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ////////////////////////////////////////////
+                                            // Texto de processamento...
+                                            final Animation animacaotextViewProgress = AnimationUtils.loadAnimation(context, R.anim.animate_in_out_enter);
+                                            animacaotextViewProgress.setDuration(500);
+                                            textViewProgress.startAnimation(animacaotextViewProgress);
+                                            textViewProgress.setText("Sucesso");
+                                            ////////////////////////////////////////////
+                                            // Ícone do processamento...
+                                            Drawable drawable = context.getResources().getDrawable(R.drawable.ic_ok);
+                                            Rect bounds = mProgressDialog.getIndeterminateDrawable().getBounds(); // re-use bounds from current drawable
+                                            mProgressDialog.setIndeterminateDrawable(drawable); // set new drawable
+                                            mProgressDialog.getIndeterminateDrawable().setBounds(bounds); // set bounds to new drawable
+
+                                            final Animation animacaomProgressDialog = AnimationUtils.loadAnimation(context, R.anim.animate_shrink_enter);
+                                            animacaomProgressDialog.setDuration(500);
+                                            textViewProgress.startAnimation(animacaomProgressDialog);
+
+                                            mProgressDialog.startAnimation(animacaomProgressDialog);
+                                        }
+                                    });
+
+
+                                    try {
+                                        sleep(1700);
+                                        dialog.dismiss();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+
+
+
+                                } catch (Exception e) {
+                                    System.out.println("==================> " + e.toString());
+                                }
+                            }
+                        };
+                        threadAnimacao.start();
+                    } else {
+                        LinearLayout linearLayout = (LinearLayout) dialog.getWindow().findViewById(R.id.progressCorFundo);
+                        ProgressBar mProgressDialog = (ProgressBar) dialog.getWindow().findViewById(R.id.progressBar);
+                        TextView textViewProgress = (TextView) dialog.getWindow().findViewById(R.id.textViewProgressDialog);
+                        ///////////////////////
+                        Thread threadAnimacao = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(5000);
+
+                                    ((Activity) context).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ////////////////////////////////////////////
+                                            // Background do processamento...
+                                            linearLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_gradient_progresdialog_fullscreen_erro));
+                                            linearLayout.setAlpha(0.5f);
+                                            linearLayout.animate()
+                                                    .alpha(1.5f)
+                                                    .setDuration(1500)
+                                                    .setStartDelay(750)
+                                                    .start();
+                                        }
+                                    });
+
+
+                                    try {
+                                        sleep(600);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    ((Activity) context).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ////////////////////////////////////////////
+                                            // Texto de processamento...
+                                            final Animation animacaotextViewProgress = AnimationUtils.loadAnimation(context, R.anim.animate_in_out_enter);
+                                            animacaotextViewProgress.setDuration(500);
+                                            textViewProgress.startAnimation(animacaotextViewProgress);
+                                            textViewProgress.setText("Erro");
+                                            ////////////////////////////////////////////
+                                            // Ícone do processamento...
+                                            Drawable drawable = context.getResources().getDrawable(R.drawable.ic_erro);
+                                            Rect bounds = mProgressDialog.getIndeterminateDrawable().getBounds(); // re-use bounds from current drawable
+                                            mProgressDialog.setIndeterminateDrawable(drawable); // set new drawable
+                                            mProgressDialog.getIndeterminateDrawable().setBounds(bounds); // set bounds to new drawable
+
+                                            final Animation animacaomProgressDialog = AnimationUtils.loadAnimation(context, R.anim.animate_shrink_enter);
+                                            animacaomProgressDialog.setDuration(500);
+                                            textViewProgress.startAnimation(animacaomProgressDialog);
+
+                                            mProgressDialog.startAnimation(animacaomProgressDialog);
+                                        }
+                                    });
+
+
+                                    try {
+                                        sleep(1700);
+                                        dialog.dismiss();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+
+
+                                } catch (Exception e) {
+                                    System.out.println("==================> " + e.toString());
+                                }
+                            }
+                        };
+                        threadAnimacao.start();
                     }
-                    dialog.dismiss();
+
+
+
+
                 }
 
                 @Override
                 public void onFailure(Call<List<UsuarioLogin>> call, Throwable t) {
-                    dialog.dismiss();
+//                    dialog.dismiss();
                 }
             });
 
